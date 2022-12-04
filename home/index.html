@@ -1,46 +1,416 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8" />
+    <style type="text/css">
+      body {
+        font-size: 0.7vw;
+      }
 
+      #root {
+        font-family: monospace;
+        white-space: pre;
+      }
+
+      .card {
+        text-decoration: none;
+      }
+
+      .card-newsblur {
+        color: #E5A23E;
+      }
+
+      .card-newsblur.hover {
+        background-color: #E5A23E;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-hacker-news {
+        color: #FF6600;
+      }
+
+      .card-hacker-news.hover {
+        background-color:#FF6600;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-rock-paper-shotgun {
+        color: #44208D;
+      }
+
+      .card-rock-paper-shotgun.hover {
+        background-color: #44208D;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-kindle {
+        color: #FFA200;
+      }
+
+      .card-kindle.hover {
+        background-color: #FFA200;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-dark-sky {
+        color: #41A1BA;
+      }
+
+      .card-dark-sky.hover {
+        background-color: #41A1BA;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-madeleines {
+        color: #615375;
+      }
+
+      .card-madeleines.hover {
+        background-color: #615375;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-538 {
+        color: #EE703A;
+      }
+
+      .card-538.hover {
+        background-color: #EE703A;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-lobsters {
+        color: #500000;
+      }
+
+      .card-lobsters.hover {
+        background-color: #500000;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-netflix {
+        color: #E50914;
+      }
+
+      .card-netflix.hover {
+        background-color: #E50914;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-hulu {
+        color: #67A92B;
+      }
+
+      .card-hulu.hover {
+        background-color: #67A92B;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-day-9 {
+        color: #FFAA23;
+      }
+
+      .card-day-9.hover {
+        background-color: #FFAA23;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-twitch {
+        color: #6441A5;
+      }
+
+      .card-twitch.hover {
+        background-color: #6441A5;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-amazon-video {
+        color: #FF9900;
+      }
+
+      .card-amazon-video.hover {
+        background-color: #FF9900;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-kexp {
+        color: #FEAC31;
+      }
+
+      .card-kexp.hover {
+        background-color: #FEAC31;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-last-fm {
+        color: #B80000;
+      }
+
+      .card-last-fm.hover {
+        background-color: #B80000;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-spotify {
+        color: #84BD00;
+      }
+
+      .card-spotify.hover {
+        background-color: #84BD00;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-aurgasm {
+        color: #087191;
+      }
+
+      .card-aurgasm.hover {
+        background-color: #087191;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-pandora {
+        color: #3C5AC7;
+      }
+
+      .card-pandora.hover {
+        background-color: #3C5AC7;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-west-wing-weekly {
+        color: #0D1D35;
+      }
+
+      .card-west-wing-weekly.hover {
+        background-color: #0D1D35;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-ideotvpod {
+        color: #000000;
+      }
+
+      .card-ideotvpod.hover {
+        background-color: #000000;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-ruined {
+        color: #810005;
+      }
+
+      .card-ruined.hover {
+        background-color: #810005;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-soma-fm {
+        color: #000000;
+      }
+
+      .card-soma-fm.hover {
+        background-color: #000000;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-steam {
+        color: #1B2939;
+      }
+
+      .card-steam.hover {
+        background-color: #1B2939;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-itch-io {
+        color: #000000;
+      }
+
+      .card-itch-io.hover {
+        background-color: #000000;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .card-poe {
+        color: #921E0B;
+      }
+
+      .card-poe.hover {
+        background-color: #921E0B;
+        color: rgba(255, 255, 255, 0.9);
+      }
+    </style>
+
+    <script src="figlet.js"></script>
+
+    <script type="text/javascript">
+      const CARD_HEIGHT = 11;
+      const CARD_WIDTH = 75;
+      const HORIZ_GAP = 5;
+      const VERT_GAP = 2;
+
+      const TR_THIN = '┐';
+      const TL_THIN = '┌';
+      const BR_THIN = '┘';
+      const BL_THIN = '└';
+      const HORIZ_THIN = '─';
+      const VERT_THIN = '│';
+      const TR_THICK = '┓';
+      const TL_THICK = '┏';
+      const BR_THICK = '┛';
+      const BL_THICK = '┗';
+      const HORIZ_THICK = '━';
+      const VERT_THICK = '┃';
+
+      function cardLines({ text, klass, url }) {
+        const fullText = figlet.textSync(text, 'Varsity');
+        const textLines = fullText.split('\n');
+
+        const lines = [];
+        lines.push(TL_THIN + ''.padEnd(CARD_WIDTH - 2, HORIZ_THIN) + TR_THIN);
+        for (var i = 0; i < (CARD_HEIGHT - 1 - textLines.length); i++) {
+          lines.push(VERT_THIN + ''.padEnd(CARD_WIDTH - 2, ' ') + VERT_THIN);
+        }
+        for (var textLine of textLines.slice(0, textLines.length - 1)) {
+          lines.push(VERT_THIN + textLine.substring(0, CARD_WIDTH - 2).padEnd(CARD_WIDTH - 2, ' ') + VERT_THIN);
+        }
+        lines.push(
+          BL_THIN +
+          textLines[textLines.length - 1]
+            .substring(0, CARD_WIDTH - 2)
+            .padEnd(CARD_WIDTH - 2, ' ')
+            .replaceAll(' ', HORIZ_THIN)
+            // Hack fix for g descenders
+            .replaceAll('(' + HORIZ_THIN, '( ') +
+          BR_THIN
+        );
+
+        return lines.map(line => {
+          const e = document.createElement('a');
+          e.setAttribute('href', url);
+          e.classList.add('card', klass);
+          e.innerText = line;
+          return e;
+        })
+      }
+
+      function setupCardEvents(cls) {
+        const cards = [...document.getElementsByClassName(cls)];
+        var hovered = cards.map(() => false);
+
+        function updateStyles() {
+          cards.forEach(elem => {
+            if (hovered.some(h => h)) {
+              elem.classList.add('hover');
+              elem.innerHTML = elem.innerHTML
+                .replaceAll(TL_THIN, TL_THICK)
+                .replaceAll(TR_THIN, TR_THICK)
+                .replaceAll(BL_THIN, BL_THICK)
+                .replaceAll(BR_THIN, BR_THICK)
+                .replaceAll(HORIZ_THIN, HORIZ_THICK)
+                .replaceAll(VERT_THIN, VERT_THICK);
+            } else {
+              elem.classList.remove('hover');
+              elem.innerHTML = elem.innerHTML
+                .replaceAll(TL_THICK, TL_THIN)
+                .replaceAll(TR_THICK, TR_THIN)
+                .replaceAll(BL_THICK, BL_THIN)
+                .replaceAll(BR_THICK, BR_THIN)
+                .replaceAll(HORIZ_THICK, HORIZ_THIN)
+                .replaceAll(VERT_THICK, VERT_THIN);
+            }
+          })
+        }
+
+        cards.forEach((elem, i) => {
+          elem.addEventListener('mouseover', () => {
+            hovered[i] = true;
+            updateStyles();
+          });
+          elem.addEventListener('mouseout', () => {
+            hovered[i] = false;
+            updateStyles();
+          })
+        })
+      }
+
+      const CARDS = [
+        [
+          { text: "NewsBlur", klass: 'card-newsblur', url: "https://www.newsblur.com" },
+          { text: "Hacker News", klass: 'card-hacker-news', url: "hckrnews.com" },
+          { text: "Rock Paper Shotgun", klass: 'card-rock-paper-shotgun', url: "http://www.rockpapershotgun.com" },
+          { text: "Kindle", klass: 'card-kindle', url: 'https://read.amazon.com' },
+          { text: "Dark Sky", klass: 'card-dark-sky', url: 'https://darksky.net/forecast/42.3668,-71.1061/us12/en' },
+          { text: "Madeleines", klass: 'card-madeleines', url: 'http://madelein.es' },
+          { text: "538", klass: 'card-538', url: 'http://fivethirtyeight.com' },
+          { text: 'Lobsters', klass: 'card-lobsters', url: 'https://lobste.rs' }
+        ],
+        [
+          { text: 'Netflix', klass: 'card-netflix', url: 'https://netflix.com/browse' },
+          { text: 'Hulu', klass: 'card-hulu', url: 'http://www.hulu.com/' },
+          { text: 'Day [9]', klass: 'card-day-9', url: 'http://day9.tv/' },
+          { text: 'Twitch', klass: 'card-twitch', url: 'http://www.twitch.tv/directory/following' },
+          { text: 'Amazon Video', klass: 'card-amazon-video', url: 'http://www.amazon.com/b/ref=PV_ShortUrl?_encoding=UTF8&amp;node=2676882011' },
+        ],
+        [
+          { text: 'KEXP', klass: 'card-kexp', url: 'http://kexp.org/' },
+          { text: 'last.fm', klass: 'card-last-fm', url: 'http://www.last.fm/user/OmenPigeon/' },
+          { text: 'Spotify', klass: 'card-spotify', url: 'https://play.spotify.com/' },
+          { text: 'aurgasm', klass: 'card-aurgasm', url: 'http://aurgasm.us/' },
+          { text: 'pandora', klass: 'card-pandora', url: 'https://www.pandora.com/collection/' },
+          { text: 'West Wing Weekly', klass: 'card-west-wing-weekly', url: 'http://thewestwingweekly.com/' },
+          { text: 'IdeoTVPod', klass: 'card-ideotvpod', url: 'https://www.idontevenownatelevision.com' },
+          { text: 'Ruined', klass: 'card-ruined', url: 'https://podcasts.apple.com/us/podcast/ruined-with-alison-leiby-and-halle-kiefer/id1528202364/' },
+          { text: 'Soma.fm', klass: 'card-soma-fm', url: 'https://somafm.com/' },
+        ],
+        [
+          { text: 'Steam', klass: 'card-steam', url: 'https://store.steampowered.com' },
+          { text: 'itch.io', klass: 'card-itch-io', url: 'https://itch.io' },
+          { text: 'Path of Exile', klass: 'card-poe', url: 'https://pathofexile.com' },
+        ]
+      ]
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const root = document.getElementById('root');
+        figlet.preloadFonts(["Varsity"], () => {
+          root.appendChild(document.createTextNode(''.padEnd(VERT_GAP, '\n')));
+
+          for (var section of CARDS) {
+            for (var groupStart = 0; groupStart < section.length; groupStart += 3) {
+              const group = section.slice(groupStart, groupStart + 3);
+              const elemLines = group.map(cardLines);
+
+              root.appendChild(document.createTextNode(''.padEnd(VERT_GAP, '\n')));
+              for (var i = 0; i < CARD_HEIGHT; i++) {
+                root.appendChild(document.createTextNode(''.padEnd(HORIZ_GAP, ' ')));
+                if (elemLines.length > 0) {
+                  root.appendChild(elemLines[0][i]);
+                }
+
+                root.appendChild(document.createTextNode(''.padEnd(HORIZ_GAP, ' ')));
+                if (elemLines.length > 1) {
+                  root.appendChild(elemLines[1][i]);
+                }
+
+                root.appendChild(document.createTextNode(''.padEnd(HORIZ_GAP, ' ')));
+                if (elemLines.length > 2) {
+                  root.appendChild(elemLines[2][i]);
+                }
+
+                root.appendChild(document.createTextNode('\n'))
+              }
+
+              group.forEach(card => setupCardEvents(card.klass));
+            }
+
+            root.appendChild(document.createTextNode(''.padEnd(VERT_GAP, '\n')));
+          }
+        })
+      })
+    </script>
   </head>
   <body>
-    <ul>
-      <li>Read
-        <ol>
-          <!-- E5A23E -->
-          <li><a href="https://www.newsblur.com">NewsBlur</a></li>
-          <!-- FF6600 -->
-          <li><a href="http://hckrnews.com">Hacker News</a></li>
-          <!-- C1272C -->
-          <li><a href="http://www.rockpapershotgun.com/">Rock Paper Shotgun</a></li>
-          <!-- FFA200 -->
-          <li><a href="https://read.amazon.com">Kindle</a></li>
-          <!-- 5591DF -->
-          <li><a href="http://forecast.io/#/f/42.3902,-71.1190">forecast.io</a></li>
-          <!-- 615375 -->
-          <li><a href="http://madelein.es">Madeleines</a></li>
-          <!-- EE703A -->
-          <li><a href="http://fivethirtyeight.com" >FiveThirtyEight</a></li>
-          <!-- 500000 -->
-          <li><a href="https://lobste.rs/">Lobsters</a></li>
-        </ol>
-      </li>
-      <li>Watch
-        <ul>
-          <!-- E50914 -->
-          <li><a href="http://www.netflix.com/browse">Netflix</a></li>
-          <!-- 67A92B -->
-          <li><a href="http://www.hulu.com/">hulu</a></li>
-          <!-- FFAA23 -->
-          <li><a href="http://day9.tv/archives/">Day [9]</a></li>
-          <!-- 6441A5 -->
-          <li><a href="http://www.twitch.tv/directory/following">twitch.tv</a></li>
-          <!-- FF9900 -->
-          <li><a href="http://www.amazon.com/b/ref=PV_ShortUrl?_encoding=UTF8&amp;node=2676882011">Amazon Video</a></li>
-        </ul>
-      </li>
-      <li>Listen</li>
-      <li>Play</li>
-    </ul>
+    <div id="root"></div>
   </body>
 </html>
