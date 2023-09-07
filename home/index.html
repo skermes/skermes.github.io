@@ -2,425 +2,341 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type="text/css">
+      :root {
+        --hover-transition: 0.5s ease-in-out;
+        --spacing: 3vw;
+      }
+
       body {
-        font-size: 0.7vw;
+        margin: 0;
       }
 
-      #root {
-        font-family: monospace;
-        white-space: pre;
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--spacing);
+        margin: var(--spacing);
       }
 
-      .card {
+      @media(max-width: 500px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @font-face {
+        font-family: "Bebas Regular";
+        src: url("../Bebas-Regular.ttf") format("truetype");
+      }
+
+      a {
+        height: calc(var(--spacing) * 3);
+
+        font-family: "Bebas Regular";
+        font-size: calc(var(--spacing) * 1.2);
         text-decoration: none;
+
+        background: var(--link-image);
+        background-size: cover;
+        background-position: center
       }
 
-      .card-newsblur {
-        color: #E5A23E;
+      @media(max-width: 500px) {
+        a {
+          font-size: calc(var(--spacing) * 3);
+          height: calc(var(--spacing) * 6);
+        }
       }
 
-      .card-newsblur.hover {
-        background-color: #E5A23E;
-        color: rgba(255, 255, 255, 0.9);
+      a .label {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        text-align: center;
+        box-sizing: border-box;
+        height: 100%;
+
+        /* Screen mix turns black to the background and keeps white opaque */
+        color: black;
+        background: white;
+        border: calc(var(--spacing) / 6) solid black;
+        mix-blend-mode: screen;
+        transition: color var(--hover-transition), background var(--hover-transition);
       }
 
-      .card-hacker-news {
-        color: #FF6600;
+      @media(max-width: 500px) {
+        a .label {
+          background: black;
+          color: white;
+        }
       }
 
-      .card-hacker-news.hover {
-        background-color:#FF6600;
-        color: rgba(255, 255, 255, 0.9);
+      a:hover .label {
+        background: black;
+        color: white;
       }
 
-      .card-rock-paper-shotgun {
-        color: #44208D;
+      .newsblur {
+        --link-image: url('./newsblur.png');
       }
 
-      .card-rock-paper-shotgun.hover {
-        background-color: #44208D;
-        color: rgba(255, 255, 255, 0.9);
+      .hackernews {
+        --link-image: url('./hackernews.png');
       }
 
-      .card-kindle {
-        color: #FFA200;
+      .rockpapershotgun {
+        --link-image: url('./rockpapershotgun.png');
       }
 
-      .card-kindle.hover {
-        background-color: #FFA200;
-        color: rgba(255, 255, 255, 0.9);
+      .kindle {
+        --link-image: url('./kindle.png');
       }
 
-      .card-merry-sky {
-        color: #41A1BA;
+      .wunderground {
+        --link-image: url('./wunderground.jpg');
       }
 
-      .card-merry-sky.hover {
-        background-color: #41A1BA;
-        color: rgba(255, 255, 255, 0.9);
+      .madeleines {
+        --link-image: url('./madeleines.png');
       }
 
-      .card-madeleines {
-        color: #615375;
+      .tumblr {
+        --link-image: url('./tumblr.png');
       }
 
-      .card-madeleines.hover {
-        background-color: #615375;
-        color: rgba(255, 255, 255, 0.9);
+      .lobsters {
+        --link-image: url('./lobsters.png');
       }
 
-      .card-538 {
-        color: #EE703A;
+      .netflix {
+        --link-image: url('./netflix.png');
       }
 
-      .card-538.hover {
-        background-color: #EE703A;
-        color: rgba(255, 255, 255, 0.9);
+      .amazonvideo {
+        --link-image: url('./amazon.jpg');
       }
 
-      .card-lobsters {
-        color: #500000;
+      .twitch {
+        --link-image: url('./twitch.jpg');
       }
 
-      .card-lobsters.hover {
-        background-color: #500000;
-        color: rgba(255, 255, 255, 0.9);
+      .daynine {
+        --link-image: url('./day9.png');
       }
 
-      .card-netflix {
-        color: #E50914;
+      .dropout {
+        --link-image: url('./dropout.png');
       }
 
-      .card-netflix.hover {
-        background-color: #E50914;
-        color: rgba(255, 255, 255, 0.9);
+      .nebula {
+        --link-image: url('./nebula.jpg');
       }
 
-      .card-hulu {
-        color: #67A92B;
+      .tildes {
+        --link-image: url('./tildes.png');
       }
 
-      .card-hulu.hover {
-        background-color: #67A92B;
-        color: rgba(255, 255, 255, 0.9);
+      .kexp {
+        --link-image: url('./kexp.jpg');
       }
 
-      .card-day-9 {
-        color: #FFAA23;
+      .lastfm {
+        --link-image: url('./lastfm.jpg');
       }
 
-      .card-day-9.hover {
-        background-color: #FFAA23;
-        color: rgba(255, 255, 255, 0.9);
+      .spotify {
+        --link-image: url('./spotify.jpg');
       }
 
-      .card-twitch {
-        color: #6441A5;
+      .aurgasm {
+        --link-image: url('./aurgasm.jpg');
       }
 
-      .card-twitch.hover {
-        background-color: #6441A5;
-        color: rgba(255, 255, 255, 0.9);
+      .pandora {
+        --link-image: url('./pandora.png');
       }
 
-      .card-amazon-video {
-        color: #FF9900;
+      .westwingweekly {
+        --link-image: url('./westwingweekly.png');
       }
 
-      .card-amazon-video.hover {
-        background-color: #FF9900;
-        color: rgba(255, 255, 255, 0.9);
+      .ideotvpod {
+        --link-image: url('./ideotvpod.jpeg');
       }
 
-      .card-kexp {
-        color: #FEAC31;
+      .ruined {
+        --link-image: url('./ruined.png');
       }
 
-      .card-kexp.hover {
-        background-color: #FEAC31;
-        color: rgba(255, 255, 255, 0.9);
+      .soma {
+        --link-image: url('./soma.png');
       }
 
-      .card-last-fm {
-        color: #B80000;
+      .steam {
+        --link-image: url('./steam.jpg');
       }
 
-      .card-last-fm.hover {
-        background-color: #B80000;
-        color: rgba(255, 255, 255, 0.9);
+      .itch {
+        --link-image: url('./itch.png');
       }
 
-      .card-spotify {
-        color: #84BD00;
+      .crossword {
+        --link-image: url('./crossword.jpg');
       }
 
-      .card-spotify.hover {
-        background-color: #84BD00;
-        color: rgba(255, 255, 255, 0.9);
+      .pathofexile {
+        --link-image: url('./pathofexile.png');
       }
 
-      .card-aurgasm {
-        color: #087191;
+      .separator {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        grid-column: 1 / 4;
+        margin: var(--spacing) 0;
       }
 
-      .card-aurgasm.hover {
-        background-color: #087191;
-        color: rgba(255, 255, 255, 0.9);
+      .separator:first-of-type {
+        margin-top: 0;
       }
 
-      .card-pandora {
-        color: #3C5AC7;
+      @media(max-width: 500px) {
+        .separator {
+          grid-column: 1;
+        }
       }
 
-      .card-pandora.hover {
-        background-color: #3C5AC7;
-        color: rgba(255, 255, 255, 0.9);
+      .separator .bar {
+        display: inline-block;
+        height: 2px;
+        width: 30vw;
+        background-color: black;
       }
 
-      .card-west-wing-weekly {
-        color: #0D1D35;
+      .separator .label {
+        font-family: "Bebas Regular";
+        font-size: calc(var(--spacing) * 0.6);
+        width: 10vw;
+        text-align: center;
       }
 
-      .card-west-wing-weekly.hover {
-        background-color: #0D1D35;
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .card-ideotvpod {
-        color: #000000;
-      }
-
-      .card-ideotvpod.hover {
-        background-color: #000000;
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .card-ruined {
-        color: #810005;
-      }
-
-      .card-ruined.hover {
-        background-color: #810005;
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .card-soma-fm {
-        color: #000000;
-      }
-
-      .card-soma-fm.hover {
-        background-color: #000000;
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .card-steam {
-        color: #1B2939;
-      }
-
-      .card-steam.hover {
-        background-color: #1B2939;
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .card-itch-io {
-        color: #000000;
-      }
-
-      .card-itch-io.hover {
-        background-color: #000000;
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .card-poe {
-        color: #921E0B;
-      }
-
-      .card-poe.hover {
-        background-color: #921E0B;
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .card-crossword {
-        color: #4d88f9;
-      }
-
-      .card-crossword.hover {
-        background-color: #4d88f9;
-        color: rgba(255, 255, 255, 0.9);
+      @media(max-width: 500px) {
+        .separator .label {
+          font-size: calc(var(--spacing) * 1.2);
+        }
       }
     </style>
-
-    <script src="figlet.js"></script>
-
-    <script type="text/javascript">
-      const CARD_HEIGHT = 11;
-      const CARD_WIDTH = 75;
-      const HORIZ_GAP = 5;
-      const VERT_GAP = 2;
-
-      const TR_THIN = '┐';
-      const TL_THIN = '┌';
-      const BR_THIN = '┘';
-      const BL_THIN = '└';
-      const HORIZ_THIN = '─';
-      const VERT_THIN = '│';
-      const TR_THICK = '┓';
-      const TL_THICK = '┏';
-      const BR_THICK = '┛';
-      const BL_THICK = '┗';
-      const HORIZ_THICK = '━';
-      const VERT_THICK = '┃';
-
-      function cardLines({ text, klass, url }) {
-        const fullText = figlet.textSync(text, 'Varsity');
-        const textLines = fullText.split('\n');
-
-        const lines = [];
-        lines.push(TL_THIN + ''.padEnd(CARD_WIDTH - 2, HORIZ_THIN) + TR_THIN);
-        for (var i = 0; i < (CARD_HEIGHT - 1 - textLines.length); i++) {
-          lines.push(VERT_THIN + ''.padEnd(CARD_WIDTH - 2, ' ') + VERT_THIN);
-        }
-        for (var textLine of textLines.slice(0, textLines.length - 1)) {
-          lines.push(VERT_THIN + textLine.substring(0, CARD_WIDTH - 2).padEnd(CARD_WIDTH - 2, ' ') + VERT_THIN);
-        }
-        lines.push(
-          BL_THIN +
-          textLines[textLines.length - 1]
-            .substring(0, CARD_WIDTH - 2)
-            .padEnd(CARD_WIDTH - 2, ' ')
-            .replaceAll(' ', HORIZ_THIN)
-            // Hack fix for g descenders
-            .replaceAll('(' + HORIZ_THIN, '( ') +
-          BR_THIN
-        );
-
-        return lines.map(line => {
-          const e = document.createElement('a');
-          e.setAttribute('href', url);
-          e.classList.add('card', klass);
-          e.innerText = line;
-          return e;
-        })
-      }
-
-      function setupCardEvents(cls) {
-        const cards = [...document.getElementsByClassName(cls)];
-        var hovered = cards.map(() => false);
-
-        function updateStyles() {
-          cards.forEach(elem => {
-            if (hovered.some(h => h)) {
-              elem.classList.add('hover');
-              elem.innerHTML = elem.innerHTML
-                .replaceAll(TL_THIN, TL_THICK)
-                .replaceAll(TR_THIN, TR_THICK)
-                .replaceAll(BL_THIN, BL_THICK)
-                .replaceAll(BR_THIN, BR_THICK)
-                .replaceAll(HORIZ_THIN, HORIZ_THICK)
-                .replaceAll(VERT_THIN, VERT_THICK);
-            } else {
-              elem.classList.remove('hover');
-              elem.innerHTML = elem.innerHTML
-                .replaceAll(TL_THICK, TL_THIN)
-                .replaceAll(TR_THICK, TR_THIN)
-                .replaceAll(BL_THICK, BL_THIN)
-                .replaceAll(BR_THICK, BR_THIN)
-                .replaceAll(HORIZ_THICK, HORIZ_THIN)
-                .replaceAll(VERT_THICK, VERT_THIN);
-            }
-          })
-        }
-
-        cards.forEach((elem, i) => {
-          elem.addEventListener('mouseover', () => {
-            hovered[i] = true;
-            updateStyles();
-          });
-          elem.addEventListener('mouseout', () => {
-            hovered[i] = false;
-            updateStyles();
-          })
-        })
-      }
-
-      const CARDS = [
-        [
-          { text: "NewsBlur", klass: 'card-newsblur', url: "https://www.newsblur.com" },
-          { text: "Hacker News", klass: 'card-hacker-news', url: "http://hckrnews.com" },
-          { text: "Rock Paper Shotgun", klass: 'card-rock-paper-shotgun', url: "http://www.rockpapershotgun.com" },
-          { text: "Kindle", klass: 'card-kindle', url: 'https://read.amazon.com' },
-          { text: "Merry Sky", klass: 'card-merry-sky', url: 'https://merrysky.net/forecast/boston%20ma/us' },
-          { text: "Madeleines", klass: 'card-madeleines', url: 'http://madelein.es' },
-          { text: "538", klass: 'card-538', url: 'http://fivethirtyeight.com' },
-          { text: 'Lobsters', klass: 'card-lobsters', url: 'https://lobste.rs' }
-        ],
-        [
-          { text: 'Netflix', klass: 'card-netflix', url: 'https://netflix.com/browse' },
-          { text: 'Hulu', klass: 'card-hulu', url: 'http://www.hulu.com/' },
-          { text: 'Day [9]', klass: 'card-day-9', url: 'http://day9.tv/' },
-          { text: 'Twitch', klass: 'card-twitch', url: 'http://www.twitch.tv/directory/following' },
-          { text: 'Amazon Video', klass: 'card-amazon-video', url: 'https://www.amazon.com/Amazon-Video/b/?node=2858778011' },
-        ],
-        [
-          { text: 'KEXP', klass: 'card-kexp', url: 'http://kexp.org/' },
-          { text: 'last.fm', klass: 'card-last-fm', url: 'http://www.last.fm/user/OmenPigeon/' },
-          { text: 'Spotify', klass: 'card-spotify', url: 'https://play.spotify.com/' },
-          { text: 'aurgasm', klass: 'card-aurgasm', url: 'http://aurgasm.us/' },
-          { text: 'pandora', klass: 'card-pandora', url: 'https://www.pandora.com/collection/' },
-          { text: 'West Wing Weekly', klass: 'card-west-wing-weekly', url: 'http://thewestwingweekly.com/' },
-          { text: 'IdeoTVPod', klass: 'card-ideotvpod', url: 'https://www.idontevenownatelevision.com' },
-          { text: 'Ruined', klass: 'card-ruined', url: 'https://podcasts.apple.com/us/podcast/ruined-with-alison-leiby-and-halle-kiefer/id1528202364/' },
-          { text: 'Soma.fm', klass: 'card-soma-fm', url: 'https://somafm.com/' },
-        ],
-        [
-          { text: 'Steam', klass: 'card-steam', url: 'https://store.steampowered.com' },
-          { text: 'itch.io', klass: 'card-itch-io', url: 'https://itch.io' },
-          { text: 'Crossword', klass: 'card-crossword', url: 'https://www.nytimes.com/crosswords' },
-          { text: 'Path of Exile', klass: 'card-poe', url: 'https://pathofexile.com' },
-        ]
-      ]
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const root = document.getElementById('root');
-        figlet.preloadFonts(["Varsity"], () => {
-          root.appendChild(document.createTextNode(''.padEnd(VERT_GAP, '\n')));
-
-          for (var section of CARDS) {
-            for (var groupStart = 0; groupStart < section.length; groupStart += 3) {
-              const group = section.slice(groupStart, groupStart + 3);
-              const elemLines = group.map(cardLines);
-
-              root.appendChild(document.createTextNode(''.padEnd(VERT_GAP, '\n')));
-              for (var i = 0; i < CARD_HEIGHT; i++) {
-                root.appendChild(document.createTextNode(''.padEnd(HORIZ_GAP, ' ')));
-                if (elemLines.length > 0) {
-                  root.appendChild(elemLines[0][i]);
-                }
-
-                root.appendChild(document.createTextNode(''.padEnd(HORIZ_GAP, ' ')));
-                if (elemLines.length > 1) {
-                  root.appendChild(elemLines[1][i]);
-                }
-
-                root.appendChild(document.createTextNode(''.padEnd(HORIZ_GAP, ' ')));
-                if (elemLines.length > 2) {
-                  root.appendChild(elemLines[2][i]);
-                }
-
-                root.appendChild(document.createTextNode('\n'))
-              }
-
-              group.forEach(card => setupCardEvents(card.klass));
-            }
-
-            root.appendChild(document.createTextNode(''.padEnd(VERT_GAP, '\n')));
-          }
-        })
-      })
-    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div class="container">
+      <div class="separator">
+        <span class="bar"></span>
+        <span class="label">Read</span>
+        <span class="bar"></span>
+      </div>
+      <a class="newsblur" href="https://www.newsblur.com/">
+        <span class="label">Newsblur</span>
+      </a>
+      <a class="hackernews" href="http://hckrnews.com/">
+        <span class="label">Hacker News</span>
+      </a>
+      <a class="rockpapershotgun" href="http://www.rockpapershotgun.com/">
+        <span class="label">Rock Paper Shotgun</span>
+      </a>
+      <a class="kindle" href="https://read.amazon.com/">
+        <span class="label">Kindle</span>
+      </a>
+      <a class="wunderground" href="https://www.wunderground.com/weather/us/ma/somerville/KMASOMER108">
+        <span class="label">Wunderground</span>
+      </a>
+      <a class="madeleines" href="https://madelein.es">
+        <span class="label">Madeleines</span>
+      </a>
+      <a class="tumblr" href="https://www.tumblr.com/dashboard/hubs">
+        <span class="label">Tumblr</span>
+      </a>
+      <a class="lobsters" href="https://lobste.rs">
+        <span class="label">Lobsters</span>
+      </a>
+      <a class="tildes" href="https://tildes.net/">
+        <span class="label">Tildes</span>
+      </a>
+      <div class="separator">
+        <span class="bar"></span>
+        <span class="label">Watch</span>
+        <span class="bar"></span>
+      </div>
+      <a class="netflix" href="https://netflix.com/browse">
+        <span class="label">Netflix</span>
+      </a>
+      <a class="amazonvideo" href="https://www.amazon.com/Amazon-Video/b/?node=2858778011">
+        <span class="label">Amazon Video</span>
+      </a>
+      <a class="twitch" href="http://www.twitch.tv/directory/following">
+        <span class="label">Twitch</span>
+      </a>
+      <a class="daynine" href="http://day9.tv/">
+        <span class="label">Day [9]</span>
+      </a>
+      <a class="dropout" href="https://www.dropout.tv/browse">
+        <span class="label">Dropout</span>
+      </a>
+      <a class="nebula" href="https://nebula.tv/myshows">
+        <span class="label">Nebula</span>
+      </a>
+      <div class="separator">
+        <span class="bar"></span>
+        <span class="label">Listen</span>
+        <span class="bar"></span>
+      </div>
+      <a class="kexp" href="http://kexp.org/">
+        <span class="label">K E X P</span>
+      </a>
+      <a class="lastfm" href="http://www.last.fm/user/OmenPigeon/">
+        <span class="label">last.fm</span>
+      </a>
+      <a class="spotify" href="https://play.spotify.com/">
+        <span class="label">Spotify</span>
+      </a>
+      <a class="aurgasm" href="http://aurgasm.us/">
+        <span class="label">aurgasm</span>
+      </a>
+      <a class="pandora" href="https://www.pandora.com/collection/">
+        <span class="label">pandora</span>
+      </a>
+      <a class="westwingweekly" href="http://thewestwingweekly.com/">
+        <span class="label">The West Wing Weekly</span>
+      </a>
+      <a class="ideotvpod" href="https://www.idontevenownatelevision.com/">
+        <span class="label">IdeoTVpod</span>
+      </a>
+      <a class="ruined" href="https://www.patreon.com/ruinedpodcast/posts/">
+        <span class="label">Ruined</span>
+      </a>
+      <a class="soma" href="https://somafm.com/">
+        <span class="label">Soma.fm</span>
+      </a>
+      <div class="separator">
+        <span class="bar"></span>
+        <span class="label">Play</span>
+        <span class="bar"></span>
+      </div>
+      <a class="steam" href="https://store.steampowered.com/">
+        <span class="label">Steam</span>
+      </a>
+      <a class="itch" href="itch.io">
+        <span class="label">Itch.io</span>
+      </a>
+      <a class="crossword" href="https://www.nytimes.com/crosswords">
+        <span class="label">Crossword</span>
+      </a>
+      <a class="pathofexile" href="https://pathofexile.com/">
+        <span class="label">Path of Exile</span>
+      </a>
+    </div>
   </body>
 </html>
