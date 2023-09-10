@@ -91,8 +91,8 @@
         left: 0;
         right: 0;
         bottom: 0;
-        border: var(--max-parallax) solid white;
-        mix-blend-mode: screen;
+        border: var(--max-parallax) solid var(--mask-opaque);
+        mix-blend-mode: var(--mask-mix-mode);
       }
 
       a .label {
@@ -105,7 +105,6 @@
         height: calc(100% - var(--max-parallax));
         width: calc(100% - var(--max-parallax));
 
-        /* Screen mix turns black to the background and keeps white opaque */
         color: var(--mask-transparent);
         background: var(--mask-opaque);
         border: var(--block-border) solid var(--mask-transparent);
@@ -262,8 +261,6 @@
       .pathofexile {
         --link-image: url('./pathofexile.png');
       }
-
-
     </style>
     <script type="text/javascript">
       function setLinkPositionProperties() {
