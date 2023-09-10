@@ -281,8 +281,8 @@
       })
 
       document.addEventListener('mousemove', event => {
-        document.documentElement.style.setProperty('--mouse-x', `${event.clientX}`);
-        document.documentElement.style.setProperty('--mouse-y', `${event.clientY}`);
+        document.documentElement.style.setProperty('--mouse-x', `${event.pageX}`);
+        document.documentElement.style.setProperty('--mouse-y', `${event.pageY}`);
       })
     </script>
   </head>
