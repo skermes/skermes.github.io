@@ -266,7 +266,7 @@
 
     </style>
     <script type="text/javascript">
-      document.addEventListener('DOMContentLoaded', () => {
+      function setLinkPositionProperties() {
         [...document.getElementsByTagName('a')].forEach(link => {
           const box = link.getBoundingClientRect();
           const cx = box.left + box.width / 2;
@@ -276,6 +276,11 @@
           link.style.setProperty('--link-width', `${box.width}`);
           link.style.setProperty('--link-height', `${box.height}`);
         });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('resize', setLinkPositionProperties);
+        setLinkPositionProperties();
       })
 
       document.addEventListener('mousemove', event => {
