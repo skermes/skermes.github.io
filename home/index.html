@@ -4,50 +4,95 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type="text/css">
-      :root {
-        --hover-transition: 0.5s ease-in-out;
-        --spacing: 3vw;
-      }
-
-      body {
-        margin: 0;
-      }
-
-      .container {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: var(--spacing);
-        margin: var(--spacing);
-      }
-
-      @media(max-width: 500px) {
-        .container {
-          grid-template-columns: 1fr;
-        }
-      }
-
       @font-face {
         font-family: "Bebas Regular";
         src: url("../Bebas-Regular.ttf") format("truetype");
       }
 
-      a {
-        height: calc(var(--spacing) * 3);
+      :root {
+        --font-size-large: calc(var(--spacing) * 1.2);
+        --font-size-small: calc(var(--spacing) * 0.6);
+        --hover-transition: 0.5s ease-in-out;
 
+        --spacing: 3vw;
+        --max-parallax: calc(var(--spacing) / 3);
+        --grid-columns: 1fr 1fr 1fr;
+        --separator-columns: 1 / 4;
+        --block-height: calc(var(--spacing) * 3);
+        --block-border: calc(var(--spacing) / 6);
+        --separator-label-width: 10vw;
+        --separator-bar-width: 30vw;
+        --separator-bar-height: 2px;
+
+        /* In screen mix mode white remains white and black is fully transparent. Shades of gray are partially
+           transparent. */
+        --mask-mix-mode: screen;
+        --mask-opaque: white;
+        --mask-transparent: black;
+
+      }
+
+      @media(max-width: 500px) {
+        :root {
+          --grid-columns: 1fr;
+          --font-size-large: calc(var(--spacing) * 3);
+          --font-size-small: calc(var(--spacing) * 1.5);
+          --block-height: calc(var(--spacing) * 6);
+          --separator-columns: 1;
+          --separator-label-width: 20vw;
+        }
+      }
+
+      body {
+        margin: 0;
         font-family: "Bebas Regular";
-        font-size: calc(var(--spacing) * 1.2);
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: var(--grid-columns);
+        gap: calc(var(--spacing) - var(--max-parallax));
+        margin: var(--spacing);
+      }
+
+      a {
+        height: var(--block-height);
+
+        font-size: var(--font-size-large);
         text-decoration: none;
 
         background: var(--link-image);
         background-size: cover;
-        background-position: center
+        background-position: 50% 50%;
+        /* Smooth over the snap of parallaxing the background when you mouse in or out. Note the transition prop on
+           hover that zeroes this out so we don't get a laggy parallax effect. */
+        transition: background-position 0.1s ease-in-out;
+
+        padding: var(--block-border);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
       }
 
-      @media(max-width: 500px) {
-        a {
-          font-size: calc(var(--spacing) * 3);
-          height: calc(var(--spacing) * 6);
-        }
+      a:hover {
+        background-position:
+          calc(50% + (var(--link-cx) - var(--mouse-x)) / var(--link-width) * var(--max-parallax))
+          calc(50% + (var(--link-cy) - var(--mouse-y)) / var(--link-height) * var(--max-parallax));
+        transition: background-position 0s linear;
+      }
+
+      /* Mask out the background outside the border of the label. This gives us extra background space so the parallax
+         can slide the background around without having it visibly repeat. */
+      a:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: var(--max-parallax) solid white;
+        mix-blend-mode: screen;
       }
 
       a .label {
@@ -57,26 +102,53 @@
         justify-content: space-around;
         text-align: center;
         box-sizing: border-box;
-        height: 100%;
+        height: calc(100% - var(--max-parallax));
+        width: calc(100% - var(--max-parallax));
 
         /* Screen mix turns black to the background and keeps white opaque */
-        color: black;
-        background: white;
-        border: calc(var(--spacing) / 6) solid black;
-        mix-blend-mode: screen;
+        color: var(--mask-transparent);
+        background: var(--mask-opaque);
+        border: var(--block-border) solid var(--mask-transparent);
+        mix-blend-mode: var(--mask-mix-mode);
         transition: color var(--hover-transition), background var(--hover-transition);
       }
 
       @media(max-width: 500px) {
         a .label {
-          background: black;
-          color: white;
+          background: var(--mask-transparent);
+          color: var(--mask-opaque);
         }
       }
 
       a:hover .label {
-        background: black;
-        color: white;
+        background: var(--mask-transparent);
+        color: var(--mask-opaque);
+      }
+
+      .separator {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        grid-column: var(--separator-columns);
+        margin: var(--spacing) 0;
+      }
+
+      .separator:first-of-type {
+        margin-top: 0;
+      }
+
+      .separator .bar {
+        display: inline-block;
+        height: var(--separator-bar-height);
+        width: var(--separator-bar-width);
+        background-color: black;
+      }
+
+      .separator .label {
+        font-size: var(--font-size-small);
+        width: var(--separator-label-width);
+        text-align: center;
       }
 
       .newsblur {
@@ -191,45 +263,26 @@
         --link-image: url('./pathofexile.png');
       }
 
-      .separator {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        grid-column: 1 / 4;
-        margin: var(--spacing) 0;
-      }
 
-      .separator:first-of-type {
-        margin-top: 0;
-      }
-
-      @media(max-width: 500px) {
-        .separator {
-          grid-column: 1;
-        }
-      }
-
-      .separator .bar {
-        display: inline-block;
-        height: 2px;
-        width: 30vw;
-        background-color: black;
-      }
-
-      .separator .label {
-        font-family: "Bebas Regular";
-        font-size: calc(var(--spacing) * 0.6);
-        width: 10vw;
-        text-align: center;
-      }
-
-      @media(max-width: 500px) {
-        .separator .label {
-          font-size: calc(var(--spacing) * 1.2);
-        }
-      }
     </style>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+        [...document.getElementsByTagName('a')].forEach(link => {
+          const box = link.getBoundingClientRect();
+          const cx = box.left + box.width / 2;
+          const cy = box.top + box.height / 2;
+          link.style.setProperty('--link-cx', `${cx}`);
+          link.style.setProperty('--link-cy', `${cy}`);
+          link.style.setProperty('--link-width', `${box.width}`);
+          link.style.setProperty('--link-height', `${box.height}`);
+        });
+      })
+
+      document.addEventListener('mousemove', event => {
+        document.documentElement.style.setProperty('--mouse-x', `${event.clientX}`);
+        document.documentElement.style.setProperty('--mouse-y', `${event.clientY}`);
+      })
+    </script>
   </head>
   <body>
     <div class="container">
