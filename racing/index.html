@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      // https://www.youtube.com/watch?v=vsPzo7IVTHw
+
+      const DEBUG = false;
+
+      const TILE_SIZE = 100;
+      const PATH_WIDTH = 70;
+
+      function ltrTile(x, y) {
+        return {
+          x: x,
+          y: y,
+          w: TILE_SIZE,
+          h: TILE_SIZE,
+          path: {
+            kind: 'line',
+            start: {
+              x: x,
+              y: y + TILE_SIZE / 2
+            },
+            end: {
+              x: x + TILE_SIZE,
+              y: y + TILE_SIZE / 2
+            }
+          },
+          waypoints: [
+            {
+              x: x + TILE_SIZE / 2,
+              y: y + TILE_SIZE / 2
+            }
+          ]
+        }
+      }
+
+      function ttbTile(x, y) {
+        return {
+          x: x,
+          y: y,
+          w: TILE_SIZE,
+          h: TILE_SIZE,
+          path: {
+            kind: 'line',
+            start: {
+              x: x + TILE_SIZE / 2,
+              y: y
+            },
+            end: {
+              x: x + TILE_SIZE / 2,
+              y: y + TILE_SIZE
+            }
+          },
+          waypoints: [
+            {
+              x: x + TILE_SIZE / 2,
+              y: y + TILE_SIZE / 2
+            }
+          ]
+        }
+      }
+
+      // TODO: Surely there's an easy way to combine all the corners into one function
+      function btr90Tile(x, y) {
+        return {
+          x: x,
+          y: y,
+          w: TILE_SIZE,
+          h: TILE_SIZE,
+          path: {
+            kind: 'arc',
+            center: {
+              x: x + TILE_SIZE,
+              y: y + TILE_SIZE,
+            },
+            radius: TILE_SIZE / 2,
+            startAngle: Math.PI,
+            endAngle: 3 * Math.PI / 2,
+            counterclockwise: false
+          },
+          waypoints: [
+            {
+               x: (x + TILE_SIZE) - Math.cos(Math.PI / 4) * (TILE_SIZE / 2),
+               y: (y + TILE_SIZE) - Math.sin(Math.PI / 4) * (TILE_SIZE / 2)
+            }
+          ]
+        }
+      }
+
+      function ltb90Tile(x, y) {
+        return {
+          x: x,
+          y: y,
+          w: TILE_SIZE,
+          h: TILE_SIZE,
+          path: {
+            kind: 'arc',
+            center: {
+              x: x,
+              y: y + TILE_SIZE
+            },
+            radius: TILE_SIZE / 2,
+            startAngle: 3 * Math.PI / 2,
+            endAngle: 0,
+            counterclockwise: false
+          },
+          waypoints: [
+            {
+              x: x + Math.cos(Math.PI / 4) * (TILE_SIZE / 2),
+              y: (y + TILE_SIZE) - Math.sin(Math.PI / 4) * (TILE_SIZE / 2)
+            }
+          ]
+        }
+      }
+
+      function ttl90Tile(x, y) {
+        return {
+          x: x,
+          y: y,
+          w: TILE_SIZE,
+          h: TILE_SIZE,
+          path: {
+            kind: 'arc',
+            center: {
+              x: x,
+              y: y,
+            },
+            radius: TILE_SIZE / 2,
+            startAngle: 0,
+            endAngle: Math.PI / 2,
+            counterclockwise: false
+          },
+          waypoints: [
+            {
+              x: x + Math.cos(Math.PI / 4) * (TILE_SIZE / 2),
+              y: y + Math.sin(Math.PI / 4) * (TILE_SIZE / 2)
+            }
+          ]
+        }
+      }
+
+      function rtt90Tile(x, y) {
+        return {
+          x: x,
+          y: y,
+          w: TILE_SIZE,
+          h: TILE_SIZE,
+          path: {
+            kind: 'arc',
+            center: {
+              x: x + TILE_SIZE,
+              y: y
+            },
+            radius: TILE_SIZE / 2,
+            startAngle: Math.PI / 2,
+            endAngle: Math.PI,
+            counterclockwise: false
+          },
+          waypoints: [
+            {
+              x: (x + TILE_SIZE) - Math.cos(Math.PI / 4) * (TILE_SIZE / 2),
+              y: y + Math.sin(Math.PI / 4) * (TILE_SIZE / 2)
+            }
+          ]
+        }
+      }
+
+      const track = {
+        tiles: [
+          ltrTile(TILE_SIZE * 5, TILE_SIZE),
+          ltrTile(TILE_SIZE * 6, TILE_SIZE),
+          ltrTile(TILE_SIZE * 7, TILE_SIZE),
+          ltrTile(TILE_SIZE * 8, TILE_SIZE),
+          ltb90Tile(TILE_SIZE * 9, TILE_SIZE),
+          ttbTile(TILE_SIZE * 9, TILE_SIZE * 2),
+          ttbTile(TILE_SIZE * 9, TILE_SIZE * 3),
+          ttbTile(TILE_SIZE * 9, TILE_SIZE * 4),
+          ttl90Tile(TILE_SIZE * 9, TILE_SIZE * 5),
+          ltrTile(TILE_SIZE * 8, TILE_SIZE * 5),
+          ltrTile(TILE_SIZE * 7, TILE_SIZE * 5),
+          ltrTile(TILE_SIZE * 6, TILE_SIZE * 5),
+          ltrTile(TILE_SIZE * 5, TILE_SIZE * 5),
+          ltrTile(TILE_SIZE * 4, TILE_SIZE * 5),
+          ltrTile(TILE_SIZE * 3, TILE_SIZE * 5),
+          ltrTile(TILE_SIZE * 2, TILE_SIZE * 5),
+          rtt90Tile(TILE_SIZE, TILE_SIZE * 5),
+          ttbTile(TILE_SIZE, TILE_SIZE * 4),
+          ttbTile(TILE_SIZE, TILE_SIZE * 3),
+          ttbTile(TILE_SIZE, TILE_SIZE * 2),
+          btr90Tile(TILE_SIZE, TILE_SIZE),
+          ltrTile(TILE_SIZE * 2, TILE_SIZE),
+          ltrTile(TILE_SIZE * 3, TILE_SIZE),
+          ltrTile(TILE_SIZE * 4, TILE_SIZE),
+        ]
+      };
+
+      const allWaypoints = track.tiles.flatMap(tile => tile.waypoints);
+
+      const cars = [
+        {
+          // position of back left corner
+          x: TILE_SIZE * 5 - PATH_WIDTH / 1.5,
+          y: 3 * TILE_SIZE / 2 - PATH_WIDTH / 4,
+          w: PATH_WIDTH / 2,
+          h: PATH_WIDTH / 4,
+          angle: 0,
+          speed: 0,
+          attributes: {
+            maxSpeed: 190,
+            acceleration: 40,
+            braking: 60,
+            turning: Math.PI / 2
+          },
+          targetWaypoint: 0
+        }
+      ]
+
+      addEventListener('DOMContentLoaded', main);
+
+      function main() {
+        const canvas = document.getElementById('racetrack');
+        const ctx = canvas.getContext('2d');
+
+        canvas.setAttribute('width', TILE_SIZE * 11);
+        canvas.setAttribute('height', TILE_SIZE * 11);
+
+        drawTrack(ctx);
+        drawCars(ctx);
+
+        let now = undefined;
+        let running = true;
+
+        function frame(timestamp) {
+          if (now === undefined) {
+            now = timestamp;
+            requestAnimationFrame(frame);
+          } else {
+            const dt = (timestamp - now) / 1000;
+            now = timestamp;
+            updateCars(dt);
+
+            drawTrack(ctx);
+            drawCars(ctx);
+
+            if (running) {
+              requestAnimationFrame(frame);
+            } else {
+              now = undefined;
+            }
+          }
+        }
+        requestAnimationFrame(frame);
+
+        const pause = document.getElementById('pause');
+        pause.addEventListener('click', () => {
+          if (running) {
+            running = false;
+            pause.innerText = 'Play';
+          } else {
+            running = true;
+            pause.innerText = 'Pause';
+            requestAnimationFrame(frame);
+          }
+        })
+      }
+
+      function drawTrack(ctx) {
+        track.tiles.forEach(tile => drawTile(ctx, tile));
+      }
+
+      function drawTile(ctx, tile) {
+        ctx.fillStyle = '#f0faf5';
+        ctx.fillRect(tile.x, tile.y, tile.w, tile.h);
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#999';
+        // TODO: Put on tile.path
+        ctx.lineWidth = PATH_WIDTH;
+
+        if (tile.path.kind === 'line') {
+          ctx.moveTo(tile.path.start.x, tile.path.start.y);
+          ctx.lineTo(tile.path.end.x, tile.path.end.y)
+        } else if (tile.path.kind === 'arc') {
+          ctx.arc(
+            tile.path.center.x,
+            tile.path.center.y,
+            tile.path.radius,
+            tile.path.startAngle,
+            tile.path.endAngle,
+            tile.path.counterclockwise
+          );
+        }
+
+        ctx.stroke();
+
+        if (DEBUG) {
+          ctx.strokeStyle = 'red';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(tile.x, tile.y, tile.w, tile.h);
+
+          ctx.fillStyle = 'blue';
+          ctx.strokeStyle = 'blue';
+
+          tile.waypoints.forEach(waypoint => {
+            ctx.beginPath();
+            ctx.arc(waypoint.x, waypoint.y, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(waypoint.x, waypoint.y, PATH_WIDTH / 2, 0, Math.PI * 2);
+            ctx.stroke();
+          });
+        }
+      }
+
+      function drawCars(ctx) {
+        cars.forEach(car => drawCar(ctx, car));
+      }
+
+      function drawCar(ctx, car) {
+        ctx.translate(car.x, car.y);
+        ctx.rotate(car.angle);
+
+        ctx.beginPath();
+        ctx.fillStyle = '#333';
+        ctx.fillRect(0, 0, car.w, car.h);
+
+        ctx.resetTransform();
+
+        if (DEBUG) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'red';
+          ctx.moveTo(car.x, car.y);
+          ctx.lineTo(allWaypoints[car.targetWaypoint].x, allWaypoints[car.targetWaypoint].y);
+          ctx.stroke();
+        }
+      }
+
+      function updateCars(dt) {
+        cars.forEach(car => updateCar(dt, car));
+      }
+
+      function updateCar(dt, car) {
+        const targetWaypoint = allWaypoints[car.targetWaypoint];
+        const nextWaypoint = allWaypoints[(car.targetWaypoint + 1) % allWaypoints.length]
+
+        const angleToTarget = Math.atan2(targetWaypoint.y - car.y, targetWaypoint.x - car.x);
+        const angleToNext = Math.atan2(nextWaypoint.y - car.y, nextWaypoint.x - car.x);
+
+        let desiredTurn = angleToTarget - car.angle;
+
+        // Correct for discontinuity in Math.atan2
+        // https://stackoverflow.com/questions/1878907/how-can-i-find-the-smallest-difference-between-two-angles-around-a-point#7869457
+        desiredTurn = pmod(desiredTurn + Math.PI, Math.PI * 2) - Math.PI;
+
+        const turn = clamp(desiredTurn, -car.attributes.turning * dt, car.attributes.turning * dt)
+
+        // TODO: Smarter calculation involving turning speed?
+        // At 0 upcoming turn aim for max speed, at 90 degree upcoming turn aim for 1/4 max speed
+        let upcomingTurn = angleToNext - angleToTarget;
+        upcomingTurn = pmod(upcomingTurn + Math.PI, Math.PI * 2) - Math.PI;
+        let desiredSpeed = car.attributes.maxSpeed - (Math.abs(upcomingTurn) / (Math.PI / 4)) * (car.attributes.maxSpeed * 0.75);
+        desiredSpeed = clamp(desiredSpeed, car.attributes.maxSpeed * 0.1, car.attributes.maxSpeed);
+
+        const deltaV = (() => {
+          if (desiredSpeed > car.speed) {
+            return Math.min(desiredSpeed - car.speed, car.attributes.acceleration * dt);
+          } else {
+            return Math.max(desiredSpeed - car.speed, -car.attributes.braking * dt);
+          }
+        })();
+
+        car.angle = (car.angle + turn) % (Math.PI * 2);
+        car.speed = clamp(car.speed + deltaV, 0, car.attributes.maxSpeed);
+        car.x += Math.cos(car.angle) * car.speed * dt;
+        car.y += Math.sin(car.angle) * car.speed * dt;
+
+        // TODO: Smarter bounds checking
+        // TODO: Handle a car going fast enough that it skips waypoints
+        // TODO: Handle a car going off track in a way that it should skip a waypoint
+        const targetDistanceSquared = Math.pow(targetWaypoint.x - car.x, 2) + Math.pow(targetWaypoint.y - car.y, 2);
+
+        if (targetDistanceSquared < Math.pow(PATH_WIDTH / 2, 2)) {
+          car.targetWaypoint = (car.targetWaypoint + 1) % allWaypoints.length;
+        }
+
+        function clamp(x, min, max) {
+          return Math.min(max, Math.max(min, x))
+        }
+      }
+
+      function pmod(a, n) {
+        return (a % n + n) % n
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="racetrack"></canvas>
+    <button id="pause">Pause</button>
+  </body>
+</html>
