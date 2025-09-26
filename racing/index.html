@@ -1,10 +1,84 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Racing Card Game PoC</title>
+    <style>
+      html {
+        /* https://github.com/system-fonts/modern-font-stacks#old-style */
+        font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
+      }
+
+      canvas {
+        display: block;
+      }
+
+      button {
+        font-size: 1rem;
+        margin: 1rem 2rem;
+        padding: 0.5rem 1rem;
+      }
+
+      #cars-container {
+        .car {
+          margin-bottom: 2rem;
+        }
+
+        .title {
+          font-size: 1.5rem;
+          font-weight: bold;
+          border-bottom: 1px solid #aaa;
+        }
+
+        .cards {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          padding: 1rem;
+
+          .card {
+            position: relative;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            width: 10rem;
+            height: 8rem;
+            padding: 0.5rem;
+            box-shadow: 0px 4px 6px -1px rgba(129, 129, 129, 0.32);
+
+            .card-attrs {
+              margin-top: 0.5rem;
+
+              .attr-value {
+                color: #4c4;
+                font-weight: bold;
+                font-size: 1.15rem;
+              }
+
+              .attr-value.attr-bad {
+                color: #c44;
+              }
+            }
+
+            .card-text {
+              margin-top: 1rem;
+            }
+
+            .card-effect-progress {
+              position: absolute;
+              right: -4.5rem;
+              top: 4rem;
+              width: 8rem;
+              height: 1rem;
+
+              transform: rotate(270deg);
+            }
+          }
+        }
+      }
+    </style>
     <script>
       // https://www.youtube.com/watch?v=vsPzo7IVTHw
 
-      const DEBUG = false;
+      DEBUG = false;
 
       const TILE_SIZE = 100;
       const PATH_WIDTH = 70;
@@ -197,23 +271,431 @@
 
       const allWaypoints = track.tiles.flatMap(tile => tile.waypoints);
 
+      const effects = [];
+
       const cars = [
         {
           // position of back left corner
-          x: TILE_SIZE * 5 - PATH_WIDTH / 1.5,
+          x: TILE_SIZE * 5 - 1.5 * PATH_WIDTH / 2,
           y: 3 * TILE_SIZE / 2 - PATH_WIDTH / 4,
           w: PATH_WIDTH / 2,
           h: PATH_WIDTH / 4,
           angle: 0,
           speed: 0,
           attributes: {
-            maxSpeed: 190,
-            acceleration: 40,
-            braking: 60,
-            turning: Math.PI / 2
+            maxSpeed: 30,
+            acceleration: 10,
+            braking: 10,
+            turning: Math.PI / 8
           },
-          targetWaypoint: 0
-        }
+          cards: [
+            {
+              name: 'Big Pedals',
+              attributes: {
+                acceleration: 10,
+                braking: 15
+              }
+            },
+            {
+              name: 'Gearbox',
+              attributes: {
+                maxSpeed: 40,
+                turning: Math.PI / 3
+              },
+              effect: {
+                description: '50% increased adjacent SPD, ACC, BRK and TRN',
+                kind: 'static-permanent',
+                applied: false,
+                onTrigger: (triggeringCar, cardIndex) => {
+                  const targets = [
+                    triggeringCar.cards[cardIndex - 1],
+                    triggeringCar.cards[cardIndex + 1]
+                  ]
+
+                  targets.forEach(target => {
+                    if (target) {
+                      if (target.attributes.maxSpeed) { target.attributes.maxSpeed *= 1.5; }
+                      if (target.attributes.acceleration) { target.attributes.acceleration *= 1.5; }
+                      if (target.attributes.braking) { target.attributes.braking *= 1.5; }
+                      if (target.attributes.turning) { target.attributes.turning *= 1.5; }
+                    }
+                  })
+                }
+              }
+            },
+            {
+              name: 'Big Pedals',
+              attributes: {
+                acceleration: 10,
+                braking: 15
+              }
+            },
+            {
+              name: 'Faulty Afterburner',
+              attributes: {
+                maxSpeed: 80,
+                acceleration: -10
+              },
+              effect: {
+                description: 'Every 8 seconds, SPD: +100 for 4 seconds',
+                kind: 'infinite-timer',
+                duration: 8,
+                timeAccrued: 0,
+                onTrigger: (triggeringCar) => {
+                  triggeringCar.attributes.maxSpeed += 100;
+
+                  effects.push({
+                    kind: 'single-timer',
+                    duration: 4,
+                    timeAccrued: 0,
+                    onTrigger: () => {
+                      triggeringCar.attributes.maxSpeed -= 100;
+                    }
+                  })
+                }
+              }
+            },
+            {
+              name: 'Lightning Decals',
+              attributes: {
+                acceleration: 30
+              },
+              effect: {
+                description: 'Every 5 seconds, charge left 1 second',
+                kind: 'infinite-timer',
+                duration: 5,
+                timeAccrued: 0,
+                onTrigger: (triggeringCar, cardIndex) => {
+                  const target = triggeringCar.cards[cardIndex - 1];
+                  if (target.effect?.timeAccrued) {
+                    // If this goes over the duration for the effect and the target card is updated before this one it
+                    // won't trigger until the next frame. In some sense more correct to re-update this frame but
+                    // whatever.
+                    target.effect.timeAccrued += 1;
+                  }
+                }
+              }
+            },
+            {
+              name: 'Sticky Wheels',
+              attributes: {
+                braking: 10,
+                turning: Math.PI / 4
+              }
+            }
+          ],
+          targetWaypoint: 0,
+          color: '#abc123',
+          name: 'Iron Serpent',
+          startedFirstLap: false,
+          inLapZoneLastFrame: false,
+          laps: 0,
+        },
+        {
+          x: TILE_SIZE * 5 - 1.5 * PATH_WIDTH / 2,
+          y: 3 * TILE_SIZE / 2 + PATH_WIDTH / 4,
+          w: PATH_WIDTH / 2,
+          h: PATH_WIDTH / 4,
+          angle: 0,
+          speed: 0,
+          attributes: {
+            maxSpeed: 30,
+            acceleration: 10,
+            braking: 10,
+            turning: Math.PI / 8
+          },
+          cards: [
+            {
+              name: 'Tar Baby',
+              attributes: {
+                braking: 20
+              },
+              effect: {
+                description: 'Every 12 seconds, create sticky tar spot',
+                kind: 'infinite-timer',
+                duration: 12,
+                timeAccrued: 0,
+                onTrigger: (triggeringCar) => {
+                  const behindCarX = triggeringCar.x - Math.cos(triggeringCar.angle) * PATH_WIDTH / 2;
+                  const behindCarY = triggeringCar.y - Math.sin(triggeringCar.angle) * PATH_WIDTH / 2;
+
+                  effects.push({
+                    kind: 'particle',
+                    x: behindCarX,
+                    y: behindCarY,
+                    radius: PATH_WIDTH / 3,
+                    color: 'rgba(50, 50, 50, 0.5)',
+                    onCollision: (collidingCar) => {
+                      collidingCar.speed = 0;
+
+                      return 'remove';
+                    }
+                  })
+                }
+              }
+            },
+            {
+              name: 'Lead Foot',
+              attributes: {
+                acceleration: 40
+              }
+            },
+            {
+              name: 'Hemi',
+              attributes: {
+                maxSpeed: 150,
+                turning: -Math.PI / 8
+              }
+            },
+            {
+              name: 'LED Underglow',
+              attributes: {
+                turning: Math.PI / 1.5
+              }
+            },
+            {
+              name: 'Fuzzy Dice',
+              attributes: {
+                maxSpeed: -10
+              },
+              effect: {
+                description: 'Every 4 seconds, haste random card for 1 second',
+                kind: 'infinite-timer',
+                duration: 4,
+                timeAccrued: 0,
+                onTrigger: (triggeringCar, cardIndex) => {
+                  const targets = triggeringCar.cards.filter((card, i) => card.effect?.kind === 'infinite-timer' && i !== cardIndex);
+
+                  if (targets.length === 0) {
+                    return;
+                  }
+
+                  const picked = targets[Math.floor(Math.random() * targets.length)];
+                  picked.effect.hasteTimeRemaining = (picked.effect.hasteTimeRemaining || 0) + 1;
+                }
+              }
+            },
+            {
+              name: 'Fuzzy Dice',
+              attributes: {
+                maxSpeed: -10
+              },
+              effect: {
+                description: 'Every 4 seconds, haste random card for 1 second',
+                kind: 'infinite-timer',
+                duration: 4,
+                timeAccrued: 0,
+                onTrigger: (triggeringCar, cardIndex) => {
+                  const targets = triggeringCar.cards.filter((card, i) => card.effect?.kind === 'infinite-timer' && i !== cardIndex);
+
+                  if (targets.length === 0) {
+                    return;
+                  }
+
+                  const picked = targets[Math.floor(Math.random() * targets.length)];
+                  picked.effect.hasteTimeRemaining = (picked.effect.hasteTimeRemaining || 0) + 1;
+                }
+              }
+            }
+          ],
+          targetWaypoint: 0,
+          color: '#23c1ab',
+          name: 'Shadow Tongue',
+          startedFirstLap: false,
+          inLapZoneLastFrame: false,
+          laps: 0
+        },
+        {
+          x: TILE_SIZE * 5 - 3 * PATH_WIDTH / 2,
+          y: 3 * TILE_SIZE / 2 + PATH_WIDTH / 4,
+          w: PATH_WIDTH / 2,
+          h: PATH_WIDTH / 4,
+          angle: 0,
+          speed: 0,
+          attributes: {
+            maxSpeed: 30,
+            acceleration: 10,
+            braking: 10,
+            turning: Math.PI / 8
+          },
+          cards: [
+            {
+              name: 'Blue Shell',
+              attributes: {
+                maxSpeed: -20
+              },
+              effect: {
+                description: 'Every 10 seconds hit the lead car with a blue shell',
+                kind: 'infinite-timer',
+                duration: 10,
+                timeAccrued: 0,
+                onTrigger: (triggeringCar) => {
+                  const sortedCars = cars.toSorted((c1, c2) => {
+                    if (c1.laps != c2.laps) {
+                      return c2.laps - c1.laps;
+                    } else {
+                      return c2.targetWaypoint - c1.targetWaypoint;
+                    }
+                  });
+                  const target = sortedCars.find(c => c.name != triggeringCar.name);
+
+                  effects.push({
+                    kind: 'particle',
+                    x: triggeringCar.x,
+                    y: triggeringCar.y,
+                    speed: 400,
+                    radius: 6,
+                    color: 'rgba(80, 160, 220, 0.8)',
+                    getTarget: () => {
+                      return {
+                        x: target.x,
+                        y: target.y
+                      }
+                    },
+                    onCollision: (collidingCar) => {
+                      if (collidingCar.name == target.name) {
+                        target.speed = 0;
+                        target.angle = target.angle + Math.PI;
+                        return 'remove';
+                      }
+
+                      return 'persist';
+                    }
+                  })
+                }
+              }
+            },
+            {
+              name: 'Hemi',
+              attributes: {
+                maxSpeed: 150,
+                turning: -Math.PI / 8
+              }
+            },
+            {
+              name: 'Fuel Injector',
+              attributes: {
+                maxSpeed: 30,
+                acceleration: 20
+              }
+            },
+            {
+              name: 'Steering Wheel',
+              attributes: {
+                turning: Math.PI / 3
+              }
+            },
+            {
+              name: 'Sticky Wheels',
+              attributes: {
+                braking: 10,
+                turning: Math.PI / 4
+              }
+            }
+          ],
+          targetWaypoint: 0,
+          color: '#c123ab',
+          name: 'Blade Prophet',
+          startedFirstLap: false,
+          inLapZoneLastFrame: false,
+          laps: 0
+        },
+        {
+          x: TILE_SIZE * 5 - 3 * PATH_WIDTH / 2,
+          y: 3 * TILE_SIZE / 2 - PATH_WIDTH / 4,
+          w: PATH_WIDTH / 2,
+          h: PATH_WIDTH / 4,
+          angle: 0,
+          speed: 0,
+          attributes: {
+            maxSpeed: 30,
+            acceleration: 10,
+            braking: 10,
+            turning: Math.PI / 8
+          },
+          cards: [
+            {
+              name: 'Big Pedals',
+              attributes: {
+                acceleration: 10,
+                braking: 15
+              }
+            },
+            {
+              name: 'Boost Zone',
+              attributes: {},
+              effect: {
+                description: '9 seconds, create zone granting SPD: +5, TRN: +0.05 when other cars hit it (5 hits)',
+                // This should clearly be ammo or something but i don't feel like implementing it
+                kind: 'infinite-timer',
+                duration: 9,
+                timeAccrued: 0,
+                onTrigger: (triggeringCar) => {
+                  const behindCarX = triggeringCar.x - Math.cos(triggeringCar.angle) * PATH_WIDTH / 2;
+                  const behindCarY = triggeringCar.y - Math.sin(triggeringCar.angle) * PATH_WIDTH / 2;
+
+                  const carsLastHitParticle = {};
+                  let hits = 0;
+
+                  effects.push({
+                    kind: 'particle',
+                    x: behindCarX,
+                    y: behindCarY,
+                    radius: PATH_WIDTH / 6,
+                    color: '#cc8',
+                    onCollision: (collidingCar, now) => {
+                      // Assume this is the same collision, do nothing
+                      if (carsLastHitParticle[collidingCar.name] &&
+                          now - carsLastHitParticle[collidingCar.name] < 2000) {
+                        carsLastHitParticle[collidingCar.name] = now;
+                        return;
+                      }
+
+                      carsLastHitParticle[collidingCar.name] = now;
+                      if (collidingCar.name != triggeringCar.name) {
+                        triggeringCar.attributes.maxSpeed += 5;
+                        triggeringCar.attributes.turning += 0.05;
+                        hits += 1;
+                      }
+
+                      if (hits >= 5) {
+                        return 'remove'
+                      } else {
+                        return 'persist'
+                      }
+                    }
+                  })
+                }
+              }
+            },
+            {
+              name: 'Steering Wheel',
+              attributes: {
+                turning: Math.PI / 3
+              }
+            },
+            {
+              name: 'Sticky Wheels',
+              attributes: {
+                braking: 10,
+                turning: Math.PI / 4
+              }
+            },
+            {
+              name: 'Fuel Injector',
+              attributes: {
+                maxSpeed: 30,
+                acceleration: 20
+              }
+            },
+          ],
+          targetWaypoint: 0,
+          color: '#ab23c1',
+          name: 'Mystic Phantom',
+          startedFirstLap: false,
+          inLapZoneLastFrame: false,
+          laps: 0
+        },
       ]
 
       addEventListener('DOMContentLoaded', main);
@@ -223,13 +705,15 @@
         const ctx = canvas.getContext('2d');
 
         canvas.setAttribute('width', TILE_SIZE * 11);
-        canvas.setAttribute('height', TILE_SIZE * 11);
+        canvas.setAttribute('height', TILE_SIZE * 7);
+
+        initCars();
 
         drawTrack(ctx);
         drawCars(ctx);
 
         let now = undefined;
-        let running = true;
+        let running = false;
 
         function frame(timestamp) {
           if (now === undefined) {
@@ -238,10 +722,19 @@
           } else {
             const dt = (timestamp - now) / 1000;
             now = timestamp;
+
+            updateCardEffects(dt);
+            updateEffects(dt, now);
             updateCars(dt);
+
+            ctx.beginPath();
+            ctx.fillStyle = '#FAFAF3';
+            ctx.fillRect(0, 0, TILE_SIZE * 11, TILE_SIZE * 7)
 
             drawTrack(ctx);
             drawCars(ctx);
+            drawEffects(ctx);
+            updateCarsHtml();
 
             if (running) {
               requestAnimationFrame(frame);
@@ -263,14 +756,97 @@
             requestAnimationFrame(frame);
           }
         })
+
+        const debug = document.getElementById('debug');
+        debug.addEventListener('click', () => {
+          DEBUG = !DEBUG;
+
+          if (!running) {
+            drawTrack(ctx);
+            drawCars(ctx);
+          }
+        })
+      }
+
+      function initCars() {
+        const container = document.getElementById('cars-container');
+        cars.forEach(car => initCar(container, car));
+      }
+
+      function initCar(container, car) {
+        car.cards.forEach((card, i) => {
+          if (card.effect?.kind === 'static-permanent') {
+            card.effect.onTrigger(car, i);
+          }
+        })
+
+        const root = document.createElement('div');
+        root.setAttribute('class', 'car');
+        const score = document.createElement('span');
+        root.innerHTML = `
+          <div class="title"><span>${car.name}</span> - </div>
+          <div class="cards"></div>
+        `;
+        root.children[0].appendChild(score);
+        root.children[0].setAttribute('style', `color: ${car.color};`)
+        container.appendChild(root);
+        car.scoreEl = score;
+
+        car.cards.forEach(card => {
+          const cardRoot = document.createElement('div');
+          cardRoot.setAttribute('class', 'card');
+          cardRoot.innerHTML = `
+            <span class="card-name">${card.name}</span>
+            <div class="card-attrs"></div>
+            <div class="card-text">${card.effect?.description || ""}</div>
+          `
+
+          Object.keys(card.attributes).forEach(attr => {
+            car.attributes[attr] += card.attributes[attr];
+
+            cardRoot.children[1].innerHTML += `
+              <span class="attr-name">${attrShortName(attr)}</span>:
+              <span class="attr-value ${card.attributes[attr] < 0 ? "attr-bad" : ""}">${card.attributes[attr].toPrecision(3)}</span>
+            `
+          });
+
+          if (card.effect && card.effect.kind === 'infinite-timer') {
+            const progressEl = document.createElement('progress');
+            progressEl.setAttribute('class', 'card-effect-progress');
+            progressEl.setAttribute('value', 0);
+            card.effect.progressEl = progressEl;
+            cardRoot.appendChild(progressEl);
+          }
+
+          root.children[1].appendChild(cardRoot);
+        });
+      }
+
+      function attrShortName(attribute) {
+        if (attribute === 'maxSpeed') {
+          return 'SPD'
+        } else if (attribute === 'acceleration') {
+          return 'ACC'
+        } else if (attribute === 'braking') {
+          return 'BRK'
+        } else if (attribute === 'turning') {
+          return 'TRN'
+        }
       }
 
       function drawTrack(ctx) {
         track.tiles.forEach(tile => drawTile(ctx, tile));
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#eaea9a';
+        ctx.lineWidth = 8;
+        ctx.moveTo(track.tiles[0].x, track.tiles[0].y);
+        ctx.lineTo(track.tiles[0].x, track.tiles[0].y + TILE_SIZE);
+        ctx.stroke();
       }
 
       function drawTile(ctx, tile) {
-        ctx.fillStyle = '#f0faf5';
+        ctx.fillStyle = '#c0dac5';
         ctx.fillRect(tile.x, tile.y, tile.w, tile.h);
 
         ctx.beginPath();
@@ -308,7 +884,7 @@
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(waypoint.x, waypoint.y, PATH_WIDTH / 2, 0, Math.PI * 2);
+            ctx.arc(waypoint.x, waypoint.y, PATH_WIDTH / 1.75, 0, Math.PI * 2);
             ctx.stroke();
           });
         }
@@ -324,17 +900,99 @@
 
         ctx.beginPath();
         ctx.fillStyle = '#333';
+        ctx.strokeStyle = car.color;
+        ctx.lineWidth = 4;
         ctx.fillRect(0, 0, car.w, car.h);
+        ctx.strokeRect(2, 2, car.w - 4, car.h - 4);
 
         ctx.resetTransform();
 
         if (DEBUG) {
           ctx.beginPath();
           ctx.strokeStyle = 'red';
+          ctx.lineWidth = 1;
           ctx.moveTo(car.x, car.y);
           ctx.lineTo(allWaypoints[car.targetWaypoint].x, allWaypoints[car.targetWaypoint].y);
           ctx.stroke();
         }
+      }
+
+      function drawEffects(ctx) {
+        effects.forEach(effect => {
+          if (effect.kind === 'particle') {
+            drawParticle(ctx, effect);
+          }
+        })
+      }
+
+      function drawParticle(ctx, particle) {
+        ctx.beginPath();
+        ctx.fillStyle = particle.color;
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function updateCardEffects(dt) {
+        cars.forEach(car => {
+          car.cards.forEach((card, i) => {
+            if (card.effect?.kind === 'infinite-timer') {
+              let addedTime = dt;
+
+              if (card.effect.hasteTimeRemaining) {
+                card.effect.hasteTimeRemaining = Math.max(0, card.effect.hasteTimeRemaining - dt);
+                if (card.effect.hasteTimeRemaining > 0) {
+                  addedTime += dt;
+                }
+              }
+
+              let newTime = card.effect.timeAccrued + addedTime;
+
+              if (newTime >= card.effect.duration) {
+                card.effect.onTrigger(car, i);
+                newTime = newTime - card.effect.duration;
+              }
+
+              card.effect.timeAccrued = newTime;
+              card.effect.progressEl.value = newTime / card.effect.duration;
+            }
+          })
+        })
+      }
+
+      function updateEffects(dt, now) {
+        effects.forEach((effect, i) => {
+          if (effect.kind === 'single-timer') {
+            effect.timeAccrued += dt;
+
+            if (effect.timeAccrued >= effect.duration) {
+              effect.onTrigger();
+              // TODO: Check if modifying the loop during iteration screws it up
+              effects.splice(i, 1);
+            }
+          } else if (effect.kind === 'particle') {
+            if (effect.getTarget) {
+              const target = effect.getTarget();
+              const targetAngle = Math.atan2(target.y - effect.y, target.x - effect.x);
+              effect.x += Math.cos(targetAngle) * effect.speed * dt;
+              effect.y += Math.sin(targetAngle) * effect.speed * dt;
+            }
+
+            const colliders = cars.filter(car => {
+              const dx = car.x - effect.x;
+              const dy = car.y - effect.y;
+              return dx * dx + dy * dy <= effect.radius * effect.radius;
+            });
+
+            let removed = false;
+            colliders.forEach(car => {
+              const result = !removed && effect.onCollision(car, now);
+              if (result === 'remove') {
+                removed = true;
+                effects.splice(i, 1);
+              }
+            })
+          }
+        })
       }
 
       function updateCars(dt) {
@@ -360,7 +1018,7 @@
         // At 0 upcoming turn aim for max speed, at 90 degree upcoming turn aim for 1/4 max speed
         let upcomingTurn = angleToNext - angleToTarget;
         upcomingTurn = pmod(upcomingTurn + Math.PI, Math.PI * 2) - Math.PI;
-        let desiredSpeed = car.attributes.maxSpeed - (Math.abs(upcomingTurn) / (Math.PI / 4)) * (car.attributes.maxSpeed * 0.75);
+        let desiredSpeed = car.attributes.maxSpeed - (Math.abs(upcomingTurn) / (Math.PI / 4)) * (car.attributes.maxSpeed * 0.6);
         desiredSpeed = clamp(desiredSpeed, car.attributes.maxSpeed * 0.1, car.attributes.maxSpeed);
 
         const deltaV = (() => {
@@ -381,13 +1039,33 @@
         // TODO: Handle a car going off track in a way that it should skip a waypoint
         const targetDistanceSquared = Math.pow(targetWaypoint.x - car.x, 2) + Math.pow(targetWaypoint.y - car.y, 2);
 
-        if (targetDistanceSquared < Math.pow(PATH_WIDTH / 2, 2)) {
+        if (targetDistanceSquared < Math.pow(PATH_WIDTH / 1.75, 2)) {
           car.targetWaypoint = (car.targetWaypoint + 1) % allWaypoints.length;
         }
 
-        function clamp(x, min, max) {
-          return Math.min(max, Math.max(min, x))
+        const inLapZone = car.x >= track.tiles[0].x && car.x <= track.tiles[0].x + TILE_SIZE &&
+                          car.y >= track.tiles[0].y && car.y <= track.tiles[0].y + TILE_SIZE;
+        if (inLapZone && !car.inLapZoneLastFrame) {
+          if (car.startedFirstLap) {
+            car.laps += 1;
+          } else {
+            car.startedFirstLap = true;
+          }
         }
+
+        car.inLapZoneLastFrame = inLapZone;
+      }
+
+      function updateCarsHtml() {
+        cars.forEach(car => updateCarHtml(car));
+      }
+
+      function updateCarHtml(car) {
+        car.scoreEl.innerText = car.laps;
+      }
+
+      function clamp(x, min, max) {
+        return Math.min(max, Math.max(min, x))
       }
 
       function pmod(a, n) {
@@ -397,6 +1075,11 @@
   </head>
   <body>
     <canvas id="racetrack"></canvas>
-    <button id="pause">Pause</button>
+    <div>
+      <button id="pause">Pause</button>
+      <button id="debug">Debug</button>
+    </div>
+    <div id="cars-container">
+    </div>
   </body>
 </html>
