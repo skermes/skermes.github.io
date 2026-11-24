@@ -1,0 +1,26 @@
+title = "02 - Splitter"
+given_rules = []
+
+[[inputs]]
+value = "LightGreen"
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 1
+cells = ["LightGreen"]
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 1
+cells = ["LightGreen"]
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 1
+cells = ["LightGreen"]

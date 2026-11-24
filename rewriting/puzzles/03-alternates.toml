@@ -1,0 +1,15 @@
+title = "03 - Alternates"
+given_rules = []
+
+[[inputs]]
+value = "LightBlue"
+
+[[inputs]]
+value = "Red"
+
+[[outputs]]
+
+[outputs.pattern]
+width = 4
+height = 1
+cells = ["Red", "LightBlue", "Red", "LightBlue"]

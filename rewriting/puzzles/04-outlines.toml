@@ -1,0 +1,12 @@
+title = "04 - Outlines"
+given_rules = []
+
+[[inputs]]
+value = "LightBlue"
+
+[[outputs]]
+
+[outputs.pattern]
+width = 5
+height = 5
+cells = ["LightBlue", "LightBlue", "LightBlue", "LightBlue", "LightBlue", "LightBlue", "Empty", "Empty", "Empty", "LightBlue", "LightBlue", "Empty", "Empty", "Empty", "LightBlue", "LightBlue", "Empty", "Empty", "Empty", "LightBlue", "LightBlue", "LightBlue", "LightBlue", "LightBlue", "LightBlue"]

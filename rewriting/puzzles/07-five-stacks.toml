@@ -1,0 +1,43 @@
+title = "07 - Five Stacks"
+
+[[inputs]]
+value = "LightBlue"
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 5
+cells = ["LightGreen", "LightGreen", "LightGreen", "LightGreen", "LightGreen"]
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 5
+cells = ["LightGreen", "LightGreen", "LightGreen", "LightGreen", "LightGreen"]
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 5
+cells = ["LightGreen", "LightGreen", "LightGreen", "LightGreen", "LightGreen"]
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 5
+cells = ["LightGreen", "LightGreen", "LightGreen", "LightGreen", "LightGreen"]
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 5
+cells = ["LightGreen", "LightGreen", "LightGreen", "LightGreen", "LightGreen"]
+
+[[given_rules]]
+left = ["Nothing", { Value = "Empty" }, "Nothing", "Nothing", { Value = "Red" }, "Nothing", "Nothing", { Value = "LightBlue" }, "Nothing"]
+right = ["Nothing", { Value = "LightGreen" }, "Nothing", "Nothing", { Value = "Red" }, "Nothing", "Nothing", { Value = "LightBlue" }, "Nothing"]

@@ -1,0 +1,30 @@
+[
+  {
+    "file": "01-mover.toml",
+    "title": "01 - Mover"
+  },
+  {
+    "file": "02-splitter.toml",
+    "title": "02 - Splitter"
+  },
+  {
+    "file": "03-alternates.toml",
+    "title": "03 - Alternates"
+  },
+  {
+    "file": "04-outlines.toml",
+    "title": "04 - Outlines"
+  },
+  {
+    "file": "05-swap.toml",
+    "title": "05 - Swap"
+  },
+  {
+    "file": "06-transformer.toml",
+    "title": "06 - Transformer"
+  },
+  {
+    "file": "07-five-stacks.toml",
+    "title": "07 - Five Stacks"
+  }
+]

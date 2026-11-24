@@ -1,0 +1,12 @@
+title = "01 - Mover"
+given_rules = []
+
+[[inputs]]
+value = "White"
+
+[[outputs]]
+
+[outputs.pattern]
+width = 1
+height = 1
+cells = ["White"]

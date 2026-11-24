@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to play · Rewriting</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2'%3E%3Crect width='1' height='1' fill='%23ff004d'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%2329adff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- The screenshots are taken by ../tutorial-screenshots.mjs, which prints
+     the sizes for their width and height. -->
+<main class="tutorial">
+<a class="button" href="./">← Puzzles</a>
+
+<h1>How to play</h1>
+
+<p class="lead">Rewriting is a puzzle game about rules that rewrite a grid of colors. Each
+puzzle has <strong>inputs</strong>, which make a color, and <strong>outputs</strong>, which want
+a pattern of colors. You write the rules that carry colors from one to the other. Fill every
+output 10 times in one run and the puzzle's solved.</p>
+
+<nav class="contents" aria-label="Contents">
+<a href="#screen">The screen</a>
+<a href="#objects">Inputs and outputs</a>
+<a href="#rules">Rules</a>
+<a href="#ticks">How a tick works</a>
+<a href="#colors">Puzzle colors</a>
+<a href="#walkthrough">Your first puzzle</a>
+<a href="#controls">Controls</a>
+</nav>
+
+<h2 id="screen">The screen</h2>
+
+<figure>
+<img src="tutorial/screen.png" width="960" height="600" alt="The player for 05 - Swap: rules
+on the left, a black board in the middle with red and blue cells falling from two inputs, the
+inputs and output in a tray on the right, and a row of colored brushes along the bottom.">
+<figcaption>05 - Swap, paused partway through a run.</figcaption>
+</figure>
+
+<ul>
+<li><strong>Rules</strong>, on the left, are what you write. They apply in order, from the top.</li>
+<li><strong>The board</strong>, in the middle, is where they run. Black cells are empty. The
+board is as big as the window has room for.</li>
+<li><strong>The tray</strong>, on the right, holds the puzzle's inputs and outputs until you put
+them on the board.</li>
+<li><strong>The brushes</strong>, along the bottom, are for painting rules and the board.</li>
+<li><strong>The buttons</strong>, along the top, start, step through and reset a run. At the
+other end of the bar is whether you're editing or running, how many ticks the run has taken,
+and the board's size.</li>
+</ul>
+
+<h2 id="objects">Inputs and outputs</h2>
+
+<div class="figures">
+<figure>
+<img src="tutorial/tray.png" width="170" height="267" alt="The tray for 03 - Alternates: a
+blue input, a red input, and a 4×1 output wanting red, blue, red, blue.">
+<figcaption>The tray for 03 - Alternates.</figcaption>
+</figure>
+<figure>
+<img src="tutorial/objects.png" width="120" height="120" alt="The same two inputs on the
+board, drawn as rings of their colors, and the output below them, drawn as an outlined row of
+cells with a small square of the wanted color in each.">
+<figcaption>The same inputs and output<br>on the board.</figcaption>
+</figure>
+</div>
+
+<p>To put an input or output on the board, click it in the tray and then click where it
+should go, or drag it there. Drag it around the board to move it. To take it off again,
+right-click it or drag it back to the tray. Inputs and outputs can't overlap, and they have to
+fit on the board.</p>
+
+<p><strong>Inputs</strong> are drawn as a ring of their color. At the start of every tick, an
+input fills its cell with its color if the cell is empty. If its own color is still there from
+the last tick, it waits. If any other color is there, it's blocked: the run stops, and the
+input is marked <b>!!</b>.</p>
+
+<p><strong>Outputs</strong> are drawn as an outlined region, with a small square in each cell
+showing the color it wants there. A black square means that cell has to be empty. At the end
+of every tick, if every cell in the region matches, the output takes the colors, emptying the
+region, and that counts once. The counts are under the board. When a puzzle has more than one
+output, they're numbered, on the board and in the tray.</p>
+
+<h2 id="rules">Rules</h2>
+
+<figure>
+<img src="tutorial/rule.png" width="191" height="101" alt="A rule. Its left side has white in
+the middle and empty below it. Its right side has empty in the middle and white below it.">
+<figcaption>A rule that makes white fall.</figcaption>
+</figure>
+
+<p>A rule is two 3×3 patterns. The left side is a pattern to look for on the board, and the
+right side is what to replace it with. The rule above looks for a white cell with an empty one
+below it, and swaps them, so white falls one cell. Every tick, it applies everywhere on the
+board that it matches.</p>
+
+<p>Each cell of a pattern is one of these:</p>
+
+<ul class="cell-kinds">
+<li><span class="cell" style="background: #fff1e8"></span> <strong>A color</strong> matches only
+that color, and on the right side, writes it.</li>
+<li><span class="cell" style="background: #000"></span> <strong>Empty</strong>, which is black,
+matches an empty cell, and on the right side, empties the cell.</li>
+<li><span class="cell wildcard">✱</span> <strong>The wildcard</strong> matches any color, but not
+empty. Every wildcard in a rule has to match the same color, and on the right side, a wildcard
+writes that color. With wildcards in place of white, the rule above would make every color
+fall.</li>
+<li><span class="cell nothing"></span> <strong>Nothing</strong> means a cell isn't part of the
+rule. On the right side, it leaves the cell as the left side found it.</li>
+</ul>
+
+<p>Rules don't turn or flip, so a rule that moves white down never moves it sideways. To move
+colors more than one way, write more rules. A rule's pattern can hang off the edge of the
+board, as long as every cell it uses is on it.</p>
+
+<p>To change a rule, select it, pick a brush, and click or drag across the rule's cells to paint
+them. Right-clicking a cell sets it to Nothing.</p>
+
+<h2 id="ticks">How a tick works</h2>
+
+<p>A run goes one tick at a time, and each tick has three steps:</p>
+
+<ol>
+<li>Inputs fill their cells.</li>
+<li>Rules rewrite the board.</li>
+<li>Outputs that match take their colors, and count.</li>
+</ol>
+
+<figure>
+<ol class="ticks">
+<li><img src="tutorial/tick-0.png" width="100" height="120" alt="An input above an empty
+output, three cells apart.">Before the run</li>
+<li><img src="tutorial/tick-1.png" width="100" height="120" alt="One white cell, just below
+the input.">Tick 1</li>
+<li><img src="tutorial/tick-2.png" width="100" height="120" alt="Two white cells: one in the
+input's cell and one just above the output.">Tick 2</li>
+<li><img src="tutorial/tick-3.png" width="100" height="120" alt="One white cell below the
+input, and the output lit up because it just took a white.">Tick 3</li>
+</ol>
+<figcaption>The rule above under an input that makes white. Each tick, the input fills its
+cell, and the rule moves down each white that has an empty cell below it. On tick 3, a white
+lands on the output, which takes it.</figcaption>
+</figure>
+
+<p>Every rule looks at the board as it was before any of them applied, so a color that's moved
+can't move again until the next tick. That's why the whites above fall every other cell: a
+white with another right below it has to wait for that one to move first.</p>
+
+<p>Matches that overlap don't all apply. Earlier rules go first, and one rule's matches go top
+to bottom, then left to right. Each match claims the cells it uses, and a later match that
+needs any of those cells is skipped. That's true even of a match that changes nothing, so a
+rule whose two sides are the same holds colors in place.</p>
+
+<h2 id="colors">Puzzle colors</h2>
+
+<p>The colors a puzzle's inputs make and its outputs want are its <strong>puzzle
+colors</strong>, marked with a dot among the brushes. They only come from the inputs, and only
+go out through the outputs, so:</p>
+
+<ul>
+<li>You can't paint them on the board.</li>
+<li>Your rules can move them around, but can't make or destroy them: a rule can't change how
+many cells hold each puzzle color. Nor can it change how many hold the wildcard, since a
+wildcard could be any color.</li>
+<li>A rule can only write cells its left side checks, so that it can't write over a color
+without knowing it's there. Cells it writes without checking are marked <b>?</b> on the
+left.</li>
+</ul>
+
+<p>Any other color is yours to use however you like. Paint it on the board, as walls or
+markers, and make, change or remove it with rules.</p>
+
+<figure>
+<img src="tutorial/problems.png" width="191" height="357" alt="Three rules. Rule 1 is
+outlined in blue and marked given. Rule 2 turns an empty cell red, and says it changes the Red
+count from 0 to 1. Rule 3 writes red below a cell its left side doesn't check, which is marked
+with a question mark, and says it writes cells it doesn't check.">
+<figcaption>In 05 - Swap, where red and blue are puzzle colors: a given rule, and two rules
+that aren't allowed.</figcaption>
+</figure>
+
+<p>A rule that isn't allowed is outlined in red with what's wrong, and runs won't start until
+it's fixed.</p>
+
+<p>Some puzzles come with <strong>given rules</strong>, outlined in blue. You can't change,
+move or delete them, they always apply before yours, and they don't have to follow the
+restrictions above. Working out how to use them is usually the puzzle.</p>
+
+<h2 id="walkthrough">Your first puzzle</h2>
+
+<p>01 - Mover has one input that makes white and one output that wants white. Here's a way to
+solve it:</p>
+
+<ol>
+<li>Click the input in the tray, then click near the top of the board to put it there.</li>
+<li>Drag the output from the tray to a few cells below the input, in the same column.</li>
+<li>Click <b>Add</b> to add a rule. Pick the white brush and click the middle cell on the left
+and the one below the middle on the right. Then pick the black brush, for empty, and click the
+one below the middle on the left and the middle on the right. That's the rule from
+<a href="#rules">Rules</a>.</li>
+<li>Click <b>Start</b>. White falls from the input to the output, and when the output has taken
+it 10 times, the puzzle's solved.</li>
+</ol>
+
+<figure>
+<img src="tutorial/solved.png" width="384" height="177" alt="A dialog saying Congratulations!
+You solved 01 - Mover in 21 ticks, with buttons for the next puzzle, going back to the
+puzzles, and staying here.">
+</figure>
+
+<p>When a run doesn't do what you expect, pause it and step through it a tick at a time.
+<b>Reset</b> ends the run and goes back to editing. Runs work on a copy of the board, so
+whatever you painted is still there.</p>
+
+<h2 id="controls">Controls</h2>
+
+<div class="table-wrap">
+<table class="controls">
+<thead>
+<tr><th>To</th><th>Click</th><th>Or press</th></tr>
+</thead>
+<tbody>
+<tr><td>Start or pause a run</td><td>Start</td><td><kbd>Space</kbd></td></tr>
+<tr><td>Run one tick, starting a run if there isn't one</td><td>Step</td><td><kbd>S</kbd></td></tr>
+<tr><td>End the run and go back to editing</td><td>Reset</td><td><kbd>R</kbd></td></tr>
+<tr><td>Empty the board</td><td>Clear</td><td><kbd>C</kbd></td></tr>
+<tr><td>Add a rule after the selected one</td><td>Add</td><td><kbd>A</kbd></td></tr>
+<tr><td>Delete the selected rule</td><td>Delete</td><td><kbd>D</kbd> or <kbd>Delete</kbd></td></tr>
+<tr><td>Select a rule</td><td>The rule</td><td><kbd>↑</kbd> <kbd>↓</kbd></td></tr>
+<tr><td>Move the selected rule</td><td>↑ or ↓</td><td><kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd></td></tr>
+<tr><td>Choose a brush</td><td>The brush</td><td><kbd>←</kbd> <kbd>→</kbd></td></tr>
+<tr><td>Paint a rule's cells</td><td>Click or drag across them. Right-click sets Nothing.</td><td></td></tr>
+<tr><td>Paint the board</td><td>Click or drag. Right-click erases.</td><td></td></tr>
+<tr><td>Pick up an input or output</td><td>Click or drag it, in the tray or on the board</td><td></td></tr>
+<tr><td>Put it back in the tray</td><td>Right-click it, or drag it to the tray</td><td></td></tr>
+<tr><td>Let go of what you're holding</td><td>Right-click</td><td><kbd>Esc</kbd></td></tr>
+<tr><td>Go back to the puzzles</td><td>← Puzzles</td><td><kbd>Esc</kbd></td></tr>
+</tbody>
+</table>
+</div>
+
+<p>You can only change things between runs, so reset a run to edit. Nothing is saved: leaving a
+puzzle or reloading the page starts it over. Resizing the window between runs resizes the
+board, and inputs and outputs that no longer fit go back to the tray.</p>
+
+<p class="next"><a class="button" href="./#01-mover">Play 01 - Mover</a>
+<a class="button" href="./">All puzzles</a></p>
+</main>
+</body>
+</html>

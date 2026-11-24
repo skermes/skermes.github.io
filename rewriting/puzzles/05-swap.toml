@@ -1,0 +1,18 @@
+title = "05 - Swap"
+
+[[inputs]]
+value = "Red"
+
+[[inputs]]
+value = "LightBlue"
+
+[[outputs]]
+
+[outputs.pattern]
+width = 2
+height = 3
+cells = ["LightBlue", "Red", "LightBlue", "Red", "LightBlue", "Red"]
+
+[[given_rules]]
+left = ["Nothing", "Nothing", "Nothing", { Value = "LightBlue" }, { Value = "Red" }, "Nothing", "Nothing", "Nothing", "Nothing"]
+right = ["Nothing", "Nothing", "Nothing", { Value = "Red" }, { Value = "LightBlue" }, "Nothing", "Nothing", "Nothing", "Nothing"]
